@@ -47,7 +47,9 @@ module.exports = {
 	},
 	ignorePatterns: [
 		"*.js",
+		"*.json",
 		"index.d.ts",
-		"src/js/unicode/**"
+		"src/js/unicode/**",
+		"dist/**",
 	]
 }

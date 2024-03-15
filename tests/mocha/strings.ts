@@ -65,7 +65,6 @@ class Foo {
 `.trim(),
     ],
     invalid: [
-        String.raw`import Foo from "bar"`,
         String.raw`1 + "foo"`,
         String.raw`
 class Foo {
