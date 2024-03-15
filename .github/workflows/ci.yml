@@ -1,0 +1,40 @@
+name: CI
+
+on:
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+            - name: Install Packages
+              run: npm ci
+            - name: Build
+              run: npm run build
+            - name: Lint
+              run: npm run lint
+
+    test:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node: [18.x, 20.x]
+                eslint: [8, ^9.0.0-0]
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js ${{ matrix.node }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node }}
+            - run: npm i eslint@${{ matrix.eslint }}
+            - name: Install Packages
+              run: npm i -f
+            - name: Build
+              run: npm run build
+            - name: Test
+              run: npm test

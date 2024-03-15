@@ -8,6 +8,8 @@
     ".": "./dist/index.js"
   },
   "scripts": {
+    "lint": "eslint . --ext .js,.vue,.ts,.json,.yaml,.yml",
+    "lint:fix": "eslint . --ext .js,.vue,.ts,.json,.yaml,.yml --fix",
     "build": "rimraf dist && tsc --project ./tsconfig.build.json",
     "test": "npm run test-mocha",
     "test:update": "npm run test-mocha -- --update",
