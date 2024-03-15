@@ -44,7 +44,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                mocha: ['8.0', '9.0', '10.0']
+                mocha: ['7.0', '8.0', '9.0', '10.0']
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4
