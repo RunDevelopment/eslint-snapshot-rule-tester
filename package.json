@@ -13,7 +13,7 @@
     "build": "rimraf dist && tsc --project ./tsconfig.build.json",
     "test": "npm run test-mocha",
     "test:update": "npm run test-mocha -- --update",
-    "test-mocha": "mocha tests/mocha/**/*.ts"
+    "test:mocha": "mocha tests/mocha/**/*.ts"
   },
   "author": "Michael Schmidt",
   "license": "MIT",
