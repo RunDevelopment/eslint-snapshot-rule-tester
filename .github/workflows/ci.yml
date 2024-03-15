@@ -32,6 +32,7 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
             - run: npm i eslint@${{ matrix.eslint }}
+            - run: npx eslint --version
             - name: Install Packages
               run: npm i -f
             - name: Build
