@@ -1,0 +1,9 @@
+{
+    "extends": "./tsconfig.json",
+    "exclude": ["tests/**/*"],
+    "compilerOptions": {
+        "declaration": true, /* Generates corresponding '.d.ts' file. */
+        "sourceMap": true,
+        "removeComments": true /* Do not emit comments to output. */
+    }
+}

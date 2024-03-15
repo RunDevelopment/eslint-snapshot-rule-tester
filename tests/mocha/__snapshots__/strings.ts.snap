@@ -1,0 +1,130 @@
+# eslint-snapshot-rule-tester format: v1
+
+
+strings >> invalid >> 1 + "foo"
+  Code:
+    1 + "foo"
+        ^~~~~ [1]
+
+  Output:
+    1 + foo
+
+  [1] Found a string. Use `foo` instead.
+
+
+"strings >> invalid >> class Foo {\n    foo = \"foo\"\n    constructor() {\n        this.bar = \"bar\"\n    }\n}"
+  Code:
+    class Foo {
+        foo = "foo"
+              ^~~~~ [1]
+        constructor() {
+            this.bar = "bar"
+                       ^~~~~ [2]
+        }
+    }
+
+  Output:
+    class Foo {
+        foo = foo
+        constructor() {
+            this.bar = foo
+        }
+    }
+
+  [1] Found a string. Use `foo` instead.
+  [2] Found a string. Use `foo` instead.
+
+
+strings >> invalid >> ["foo", "bar"].join("\n")
+  Code:
+    ["foo", "bar"].join("\n")
+     ^~~~~  ^~~~~       ^~~~
+     [1]    [2]         [3]
+
+  Output:
+    [foo, foo].join(foo)
+
+  [1] Found a string. Use `foo` instead.
+  [2] Found a string. Use `foo` instead.
+  [3] Found a string. Use `foo` instead.
+
+
+strings >> invalid >> `foo ${a ? "bar" : "baz"} ${`_${""}_`}`
+  Code:
+    `foo ${a ? "bar" : "baz"} ${`_${""}_`}`
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [1]
+               ^~~~~ [2]        ^~~~~~~~~ [4]
+                       ^~~~~ [3]    ^~ [5]
+
+  Output:
+    `foo ${a ? foo : foo} ${`_${foo}_`}`
+
+  [1] Found a template string. Use `bar` instead.
+      suggestions:
+        - desc: Use something else instead.
+          output: |
+            somethingElse
+  [2] Found a string. Use `foo` instead.
+  [3] Found a string. Use `foo` instead.
+  [4] Found a template string. Use `bar` instead.
+      suggestions:
+        - desc: Use something else instead.
+          output: |
+            `foo ${a ? "bar" : "baz"} ${somethingElse}`
+  [5] Found a string. Use `foo` instead.
+
+
+"strings >> invalid >> `\nfoo ${a ? \"bar\" : \"baz\"}\n${`_${\"\"}_`}\n` + \"1\"+\"2\""
+  Code:
+    `
+    ^\ [1]
+    foo ${a ? "bar" : "baz"}
+    ~~~~~~~~~~~~~~~~~~~~~~~~\ [1]
+              ^~~~~ [2]
+                      ^~~~~ [3]
+    ${`_${""}_`}
+    ~~~~~~~~~~~~\ [1]
+      ^~~~~~~~~ [4]
+          ^~ [5]
+    ` + "1"+"2"
+    ~ [1]   ^~~ [7]
+        ^~~ [6]
+
+  Output:
+    `
+    foo ${a ? foo : foo}
+    ${`_${foo}_`}
+    ` + foo+foo
+
+  [1] Found a template string. Use `bar` instead.
+      suggestions:
+        - desc: Use something else instead.
+          output: |
+            somethingElse + "1"+"2"
+  [2] Found a string. Use `foo` instead.
+  [3] Found a string. Use `foo` instead.
+  [4] Found a template string. Use `bar` instead.
+      suggestions:
+        - desc: Use something else instead.
+          output: |
+            `
+            foo ${a ? "bar" : "baz"}
+            ${somethingElse}
+            ` + "1"+"2"
+  [5] Found a string. Use `foo` instead.
+  [6] Found a string. Use `foo` instead.
+  [7] Found a string. Use `foo` instead.
+
+
+strings >> invalid >> `foo${1 + 2}`
+  Code:
+    `foo${1 + 2}`
+    ^~~~~~~~~~~~~ [1]
+
+  Output: unchanged
+
+  [1] Found a template string. Use `bar` instead.
+      suggestions:
+        - desc: Use something else instead.
+          output: |
+            somethingElse
