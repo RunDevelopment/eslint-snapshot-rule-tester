@@ -2,14 +2,14 @@ import { SnapshotTester, assertEqualSnapshot, writeSnapshotChanges } from "./tes
 import { getSnapshotFilePath } from "./file"
 import { isObject } from "../util"
 
-function getTitlePath(test: Mocha.Runnable): string {
+function getTitleParts(test: Mocha.Runnable): string[] {
     const path = [test.title]
     for (let x = test.parent; x; x = x.parent) {
         path.push(x.title)
     }
     path.pop()
     path.reverse()
-    return path.join(" >> ")
+    return path
 }
 
 function getRoot(test: Mocha.Runnable): Mocha.Suite {
@@ -72,7 +72,7 @@ export class MochaSnapshotTester implements SnapshotTester {
         register(getRoot(this.test))
 
         const file = getSnapshotFilePath(this.test.file!)
-        const title = getTitlePath(this.test)
+        const title = getTitleParts(this.test)
 
         assertEqualSnapshot(file, title, actual)
     }

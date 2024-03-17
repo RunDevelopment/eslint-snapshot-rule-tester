@@ -66,6 +66,18 @@ class Foo {
     ],
     invalid: [
         String.raw`1 + "foo"`,
+        String.raw`"foo" + 1`,
+        String.raw`"foo" + 1${"\n"}`,
+        String.raw`"foo" + 1${"\r\n"}`,
+        String.raw`"foo"${"\t"}+ 1`,
+        {
+            code: String.raw`1 + "foo"`,
+            filename: "foo.js",
+        },
+        {
+            code: String.raw`1 + "foo"`,
+            name: "this is a custom name",
+        },
         String.raw`
 class Foo {
     foo = "foo"

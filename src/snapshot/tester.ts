@@ -1,34 +1,39 @@
 import { fail, strictEqual } from "assert"
 import { ARG_UPDATE, IS_CI } from "./config"
 import { readSnapshotFileCached, writeSnapshotFile } from "./file"
+import { ReadonlySnapshotData, SnapshotData } from "./data"
 
 export interface SnapshotTester {
     assertEqual(actual: string): void
 }
 
-const toUpdate = new Map<string, Map<string, string>>()
+const toUpdate = new Map<string, SnapshotData>()
 
-function updateSnapshot(file: string, title: string, value: string): void {
+function updateSnapshot(file: string, titleParts: readonly string[], value: string): void {
     let map = toUpdate.get(file)
     if (map === undefined) {
-        map = new Map()
+        map = new SnapshotData()
         toUpdate.set(file, map)
     }
 
-    if (map.has(title)) {
+    if (map.has(titleParts)) {
         throw new Error("There can be only one snapshot value per test case.")
     }
-    map.set(title, value)
+    map.set(titleParts, value)
 }
 
-export function assertEqualSnapshot(snapshotFile: string, title: string, actual: string): void {
+export function assertEqualSnapshot(
+    snapshotFile: string,
+    titleParts: readonly string[],
+    actual: string,
+): void {
     if (ARG_UPDATE) {
         // update existing or add new
-        updateSnapshot(snapshotFile, title, actual)
+        updateSnapshot(snapshotFile, titleParts, actual)
         return
     }
 
-    const expected = readSnapshotFileCached(snapshotFile).get(title)
+    const expected = readSnapshotFileCached(snapshotFile).get(titleParts)
 
     if (expected === undefined) {
         // add new
@@ -36,62 +41,23 @@ export function assertEqualSnapshot(snapshotFile: string, title: string, actual:
             // but not in CI
             fail("No snapshot found. Run tests with `--update` to create a new snapshot.")
         }
-        updateSnapshot(snapshotFile, title, actual)
+        updateSnapshot(snapshotFile, titleParts, actual)
         return
     }
 
-    updateSnapshot(snapshotFile, title, expected)
+    updateSnapshot(snapshotFile, titleParts, expected)
     strictEqual(actual, expected)
-}
-
-function mergeWithExisting(
-    existing: ReadonlyMap<string, string>,
-    newData: ReadonlyMap<string, string>,
-): ReadonlyMap<string, string> {
-    if (existing.size === 0) {
-        return newData
-    }
-
-    const existingKeys: readonly string[] = [...existing.keys()]
-    const newKeys: readonly string[] = [...newData.keys()]
-
-    const keys = [...new Set<string>([...existingKeys, ...newKeys])]
-    if (keys.length === existing.size) {
-        // nothing was added
-        return existing
-    }
-
-    const lastExistingInNew = newKeys.findLast((key) => existing.has(key))
-    if (lastExistingInNew === undefined) {
-        // the new snaps have no relation to the existing ones
-        return new Map([...existing, ...newData])
-    }
-
-    const order = new Map<string, number>(existingKeys.map((key, i) => [key, i]))
-    let currentOrder = order.get(lastExistingInNew)! + 0.5
-    for (const key of [...newKeys].reverse()) {
-        const existing = order.get(key)
-        if (existing !== undefined) {
-            currentOrder = existing - 0.5
-        } else {
-            order.set(key, currentOrder)
-        }
-    }
-
-    keys.sort((a, b) => order.get(a)! - order.get(b)!)
-
-    return new Map(keys.map((key) => [key, existing.get(key) ?? newData.get(key)!]))
 }
 
 export function writeSnapshotChanges(): void {
     const unused: { file: string; count: number }[] = []
 
     for (const [file, data] of toUpdate) {
-        let toWrite: ReadonlyMap<string, string> = data
+        let toWrite: ReadonlySnapshotData = data
         if (!ARG_UPDATE) {
             // add back the existing snapshots
             const existing = readSnapshotFileCached(file)
-            toWrite = mergeWithExisting(existing, data)
+            toWrite = data.mergeWithExisting(existing)
             if (toWrite.size === existing.size) {
                 // nothing changed
                 continue

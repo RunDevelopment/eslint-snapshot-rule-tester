@@ -1,7 +1,7 @@
 # eslint-snapshot-rule-tester format: v1
 
 
-strings >> invalid >> 1 + "foo"
+strings >> invalid
 Code:
   1 | 1 + "foo"
     |     ^~~~~ [1]
@@ -13,7 +13,85 @@ Output:
 ---
 
 
-"strings >> invalid >> class Foo {\n    foo = \"foo\"\n    constructor() {\n        this.bar = \"bar\"\n    }\n}"
+strings >> invalid
+Code:
+  1 | "foo" + 1
+    | ^~~~~ [1]
+
+Output:
+  1 | foo + 1
+
+[1] Found a string. Use `foo` instead.
+---
+
+
+strings >> invalid
+Code:
+  1 | "foo" + 1
+    | ^~~~~ [1]
+  2 |
+
+Output:
+  1 | foo + 1
+  2 |
+
+[1] Found a string. Use `foo` instead.
+---
+
+
+strings >> invalid >>> "\"foo\" + 1\\u000d\n"
+Code:
+  1 | "foo" + 1
+    | ^~~~~ [1]
+  2 |
+
+Output:
+  1 | foo + 1
+  2 |
+
+[1] Found a string. Use `foo` instead.
+---
+
+
+strings >> invalid >>> "\"foo\"\\u0009+ 1"
+Code:
+  1 | "foo"	+ 1
+    | ^~~~~ [1]
+
+Output:
+  1 | foo	+ 1
+
+[1] Found a string. Use `foo` instead.
+---
+
+
+strings >> invalid >>> 1 + "foo" 2
+Filename: foo.js
+
+Code:
+  1 | 1 + "foo"
+    |     ^~~~~ [1]
+
+Output:
+  1 | 1 + foo
+
+[1] Found a string. Use `foo` instead.
+---
+
+
+strings >> invalid >>> this is a custom name
+Code:
+  1 | 1 + "foo"
+    |     ^~~~~ [1]
+
+Output:
+  1 | 1 + foo
+
+[1] Found a string. Use `foo` instead.
+---
+
+
+strings >> invalid
 Code:
   1 | class Foo {
   2 |     foo = "foo"
@@ -37,7 +115,7 @@ Output:
 ---
 
 
-strings >> invalid >> ["foo", "bar"].join("\n")
+strings >> invalid
 Code:
   1 | ["foo", "bar"].join("\n")
     |  ^~~~~  ^~~~~       ^~~~
@@ -52,7 +130,7 @@ Output:
 ---
 
 
-strings >> invalid >> `foo ${a ? "bar" : "baz"} ${`_${""}_`}`
+strings >> invalid
 Code:
   1 | `foo ${a ? "bar" : "baz"} ${`_${""}_`}`
     | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [1]
@@ -78,7 +156,7 @@ Output:
 ---
 
 
-"strings >> invalid >> `\nfoo ${a ? \"bar\" : \"baz\"}\n${`_${\"\"}_`}\n` + \"1\"+\"2\""
+strings >> invalid
 Code:
   1 | `
     | ^\ [1]
@@ -121,7 +199,7 @@ Output:
 ---
 
 
-strings >> invalid >> `foo${1 + 2}`
+strings >> invalid
 Code:
   1 | `foo${1 + 2}`
     | ^~~~~~~~~~~~~ [1]
