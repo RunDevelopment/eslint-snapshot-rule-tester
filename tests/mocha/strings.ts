@@ -66,6 +66,18 @@ class Foo {
     ],
     invalid: [
         String.raw`1 + "foo"`,
+        String.raw`"foo" + 1`,
+        String.raw`"foo" + 1${"\n"}`,
+        String.raw`"foo" + 1${"\r\n"}`,
+        String.raw`"foo"${"\t"}+ 1`,
+        {
+            code: String.raw`1 + "foo"`,
+            filename: "foo.js",
+        },
+        {
+            code: String.raw`1 + "foo"`,
+            name: "this is a custom name",
+        },
         String.raw`
 class Foo {
     foo = "foo"
@@ -78,5 +90,9 @@ class Foo {
         '`foo ${a ? "bar" : "baz"} ${`_${""}_`}`',
         '`\nfoo ${a ? "bar" : "baz"}\n${`_${""}_`}\n` + "1"+"2"',
         "`foo${1 + 2}`",
+        {
+            // invalid surrogate pairs cannot be used in UTF-8
+            code: '"foo\ud800"',
+        },
     ],
 })
