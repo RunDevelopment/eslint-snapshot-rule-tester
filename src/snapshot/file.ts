@@ -27,7 +27,6 @@ function stringify(data: ReadonlyMap<string, string>): string {
         content += "\n"
 
         // value
-        const indent = "  "
         const lines = splitLines(value)
         lines.forEach((line, i) => {
             if (line === "" && i < lines.length - 1) {
@@ -36,9 +35,10 @@ function stringify(data: ReadonlyMap<string, string>): string {
                 if (line.startsWith('"') || includesInvalidSurrogatePair(line)) {
                     line = JSON.stringify(line)
                 }
-                content += indent + line + "\n"
+                content += line + "\n"
             }
         })
+        content += "---\n"
     }
 
     return content
@@ -70,12 +70,12 @@ function parse(content: string, snapshotFile: string): Map<string, string> {
         content = content.slice(lineEnd + 1)
 
         // value
-        const valueMatch = /^\n* {2}[^\n]*(\n+ {2}[^\n]*)*/.exec(content)
+        const valueMatch = /^(?:[\s\S]*?\n)??---(?=\n|$)/.exec(content)
         if (valueMatch === null) {
             throw new SyntaxError(`Unable to parse value for key: ${key}\nFile: ${snapshotFile}`)
         }
-        const indentedValue = valueMatch[0]
-        let value = indentedValue.replace(/^ {2}/gm, "")
+        const formattedValue = valueMatch[0]
+        let value = formattedValue.slice(0, -4)
         if (/^"/m.test(value)) {
             value = splitLines(value)
                 .map((l) => {
@@ -87,7 +87,7 @@ function parse(content: string, snapshotFile: string): Map<string, string> {
                 .join("\n")
         }
         parsed.set(key, value)
-        content = content.slice(indentedValue.length)
+        content = content.slice(formattedValue.length)
 
         // skip newlines
         content = content.replace(/^\n+/, "")
