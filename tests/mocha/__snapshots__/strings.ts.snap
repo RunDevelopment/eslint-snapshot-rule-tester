@@ -93,6 +93,18 @@ Output:
 
 strings >> invalid
 Code:
+"  1 | \"foo\ud800\""
+    | ^~~~~~ [1]
+
+Output:
+  1 | foo
+
+[1] Found a string. Use `foo` instead.
+---
+
+
+strings >> invalid
+Code:
   1 | class Foo {
   2 |     foo = "foo"
     |           ^~~~~ [1]

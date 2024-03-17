@@ -90,5 +90,9 @@ class Foo {
         '`foo ${a ? "bar" : "baz"} ${`_${""}_`}`',
         '`\nfoo ${a ? "bar" : "baz"}\n${`_${""}_`}\n` + "1"+"2"',
         "`foo${1 + 2}`",
+        {
+            // invalid surrogate pairs cannot be used in UTF-8
+            code: '"foo\ud800"',
+        },
     ],
 })
