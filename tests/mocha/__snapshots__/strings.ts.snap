@@ -1,7 +1,7 @@
 # eslint-snapshot-rule-tester format: v1
 
 
-strings >> invalid
+Test: strings >> invalid
 Code:
   1 | 1 + "foo"
     |     ^~~~~ [1]
@@ -13,7 +13,7 @@ Output:
 ---
 
 
-strings >> invalid
+Test: strings >> invalid
 Code:
   1 | "foo" + 1
     | ^~~~~ [1]
@@ -25,21 +25,7 @@ Output:
 ---
 
 
-strings >> invalid
-Code:
-  1 | "foo" + 1
-    | ^~~~~ [1]
-  2 |
-
-Output:
-  1 | foo + 1
-  2 |
-
-[1] Found a string. Use `foo` instead.
----
-
-
-strings >> invalid >>> "\"foo\" + 1\\u000d\n"
+Test: strings >> invalid
 Code:
   1 | "foo" + 1
     | ^~~~~ [1]
@@ -53,7 +39,21 @@ Output:
 ---
 
 
-strings >> invalid >>> "\"foo\"\\u0009+ 1"
+Test: strings >> invalid >>> "\"foo\" + 1\\u000d\n"
+Code:
+  1 | "foo" + 1
+    | ^~~~~ [1]
+  2 |
+
+Output:
+  1 | foo + 1
+  2 |
+
+[1] Found a string. Use `foo` instead.
+---
+
+
+Test: strings >> invalid >>> "\"foo\"\\u0009+ 1"
 Code:
   1 | "foo"	+ 1
     | ^~~~~ [1]
@@ -65,7 +65,7 @@ Output:
 ---
 
 
-strings >> invalid >>> 1 + "foo" 2
+Test: strings >> invalid >>> 1 + "foo" 2
 Filename: foo.js
 
 Code:
@@ -79,7 +79,7 @@ Output:
 ---
 
 
-strings >> invalid >>> this is a custom name
+Test: strings >> invalid >>> this is a custom name
 Code:
   1 | 1 + "foo"
     |     ^~~~~ [1]
@@ -91,19 +91,7 @@ Output:
 ---
 
 
-strings >> invalid
-Code:
-"  1 | \"foo\ud800\""
-    | ^~~~~~ [1]
-
-Output:
-  1 | foo
-
-[1] Found a string. Use `foo` instead.
----
-
-
-strings >> invalid
+Test: strings >> invalid
 Code:
   1 | class Foo {
   2 |     foo = "foo"
@@ -127,7 +115,7 @@ Output:
 ---
 
 
-strings >> invalid
+Test: strings >> invalid
 Code:
   1 | ["foo", "bar"].join("\n")
     |  ^~~~~  ^~~~~       ^~~~
@@ -142,7 +130,7 @@ Output:
 ---
 
 
-strings >> invalid
+Test: strings >> invalid
 Code:
   1 | `foo ${a ? "bar" : "baz"} ${`_${""}_`}`
     | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [1]
@@ -168,7 +156,7 @@ Output:
 ---
 
 
-strings >> invalid
+Test: strings >> invalid
 Code:
   1 | `
     | ^\ [1]
@@ -211,7 +199,7 @@ Output:
 ---
 
 
-strings >> invalid
+Test: strings >> invalid
 Code:
   1 | `foo${1 + 2}`
     | ^~~~~~~~~~~~~ [1]
@@ -223,4 +211,16 @@ Output: unchanged
       - Use something else instead.
         Output:
           1 | somethingElse
+---
+
+
+Test: strings >> invalid
+Code:
+"  1 | \"foo\ud800\""
+    | ^~~~~~ [1]
+
+Output:
+  1 | foo
+
+[1] Found a string. Use `foo` instead.
 ---

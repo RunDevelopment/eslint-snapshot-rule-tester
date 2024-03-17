@@ -113,7 +113,7 @@ function stringify(data: ReadonlySnapshotData): string {
             keyParts.pop()
             includesCode = false
         }
-        content += stringifyKeyLine({ parts: keyParts, includesCode }) + "\n"
+        content += "Test: " + stringifyKeyLine({ parts: keyParts, includesCode }) + "\n"
 
         // value
         const lines = splitLines(value)
@@ -152,7 +152,12 @@ function parse(content: string, snapshotFile: string): SnapshotData {
         }
 
         // key
-        const key = parseKeyLine(content.slice(0, lineEnd))
+        let keyLine = content.slice(0, lineEnd)
+        if (!keyLine.startsWith("Test: ")) {
+            throw new SyntaxError(`Expected key line, got: ${keyLine}\nFile: ${snapshotFile}`)
+        }
+        keyLine = keyLine.slice(6)
+        const key = parseKeyLine(keyLine)
         content = content.slice(lineEnd + 1)
 
         // value
