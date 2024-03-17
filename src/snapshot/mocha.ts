@@ -1,6 +1,6 @@
-import { SnapshotTester, assertEqualSnapshot, writeSnapshotChanges } from "./tester"
-import { getSnapshotFilePath } from "./file"
 import { isObject } from "../util"
+import { getSnapshotFilePath } from "./file"
+import { SnapshotTester, assertEqualSnapshot, writeSnapshotChanges } from "./tester"
 
 function getTitleParts(test: Mocha.Runnable): string[] {
     const path = [test.title]

@@ -5,17 +5,17 @@
  * Copyright OpenJS Foundation and other contributors, <www.openjsf.org>
  */
 
-import { Linter, Rule, RuleTester } from "eslint"
 import assert from "assert"
-import { cloneDeeplyExcludesParent, freezeDeeply, getRuleOptionsSchema, sanitize } from "./util"
-import { TestCase, TestCases, ruleTesterParameters, toTestCase } from "./test-case"
+import { Linter, Rule, RuleTester } from "eslint"
 import deepEqual from "fast-deep-equal"
-import { format } from "./format"
-import { defaultConfig } from "./config"
-import createAjv from "./ajv"
-import { SnapshotTester } from "./snapshot/tester"
-import { MochaSnapshotTester } from "./snapshot/mocha"
 import stringify from "json-stable-stringify-without-jsonify"
+import createAjv from "./ajv"
+import { defaultConfig } from "./config"
+import { format } from "./format"
+import { MochaSnapshotTester } from "./snapshot/mocha"
+import { SnapshotTester } from "./snapshot/tester"
+import { TestCase, TestCases, ruleTesterParameters, toTestCase } from "./test-case"
+import { cloneDeeplyExcludesParent, freezeDeeply, getRuleOptionsSchema, sanitize } from "./util"
 
 const ajv = createAjv({ strictDefaults: true })
 

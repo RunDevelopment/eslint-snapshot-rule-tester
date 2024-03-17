@@ -9,12 +9,14 @@ module.exports = {
 		"eslint:recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
 		"plugin:@typescript-eslint/recommended",
-		"plugin:prettier/recommended"
+		"plugin:prettier/recommended",
+		"plugin:import/recommended"
 	],
 	parser: "@typescript-eslint/parser",
 	plugins: [
 		"@typescript-eslint",
-		"prettier"
+		"prettier",
+		"import"
 	],
 	parserOptions: {
 		ecmaVersion: 2018,
@@ -39,10 +41,30 @@ module.exports = {
 		"@typescript-eslint/no-non-null-assertion": "off",
 		"@typescript-eslint/no-use-before-define": "off",
 		"@typescript-eslint/indent": "off",
+
+		"sort-imports": ['error', { ignoreDeclarationSort: true }],
+		"import/order": [
+			"error",
+			{
+				groups: [
+					['builtin', 'external'],
+					'internal',
+					'parent',
+					'sibling',
+					'index',
+					'object',
+				],
+				alphabetize: { order: 'asc', caseInsensitive: true },
+			},
+		],
 	},
 	settings: {
 		jsdoc: {
 			mode: "typescript"
+		},
+		"import/resolver": {
+			typescript: true,
+			node: true
 		}
 	},
 	ignorePatterns: [

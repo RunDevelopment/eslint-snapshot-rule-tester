@@ -1,6 +1,6 @@
 import type { Linter } from "eslint"
-import { TestCase } from "./test-case"
 import YAML, { ToStringOptions } from "yaml"
+import { TestCase } from "./test-case"
 import { capitalize, splitLines } from "./util"
 
 const yamlOptions: ToStringOptions = {

@@ -1,7 +1,7 @@
 import { fail, strictEqual } from "assert"
 import { ARG_UPDATE, IS_CI } from "./config"
-import { readSnapshotFileCached, writeSnapshotFile } from "./file"
 import { ReadonlySnapshotData, SnapshotData } from "./data"
+import { readSnapshotFileCached, writeSnapshotFile } from "./file"
 
 export interface SnapshotTester {
     assertEqual(actual: string): void
