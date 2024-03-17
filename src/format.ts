@@ -128,6 +128,7 @@ function groupByLine(
 
     return byLines
 }
+const ERROR_LINE_PREFIX = "    |"
 function standardFormatLocations(locations: readonly DecodedLoc[], offset: number): string[] {
     const locLines: string[] = []
 
@@ -153,7 +154,7 @@ function standardFormatLocations(locations: readonly DecodedLoc[], offset: numbe
         }
 
         if (!added) {
-            locLines.push("".padEnd(locLineIndex) + content)
+            locLines.push(ERROR_LINE_PREFIX.padEnd(locLineIndex) + content)
         }
     }
 
@@ -193,7 +194,8 @@ function compactFormatLocations(
         }
     }
 
-    return ["".padEnd(offset) + squiggleLine, "".padEnd(offset) + messageLine]
+    const prefix = ERROR_LINE_PREFIX.padEnd(offset)
+    return [prefix + squiggleLine, prefix + messageLine]
 }
 function formatCode(testCase: TestCase, messages: readonly Linter.LintMessage[]): string {
     const codeLines = splitLines(testCase.code)
@@ -201,9 +203,9 @@ function formatCode(testCase: TestCase, messages: readonly Linter.LintMessage[])
     const outputLines: string[] = []
 
     codeLines.forEach((codeLine, lineIndex) => {
-        const prefix = "  "
+        const prefix = String(lineIndex + 1).padStart(3) + " | "
         const offset = prefix.length
-        outputLines.push(prefix + codeLine)
+        outputLines.push(codeLine === "" ? prefix.trimEnd() : prefix + codeLine)
 
         const locations = byLines.get(lineIndex + 1) ?? []
         let locLines = standardFormatLocations(locations, offset)
@@ -222,50 +224,63 @@ function formatCode(testCase: TestCase, messages: readonly Linter.LintMessage[])
     return "Code:\n" + outputLines.join("\n") + "\n\n"
 }
 
+function formatOutputCode(code: string): string[] {
+    return splitLines(code).map((l, i) => {
+        const p = String(i + 1).padStart(3) + " | "
+        return l === "" ? p.trimEnd() : p + l
+    })
+}
 function formatOutput(output: string | undefined, fixable: boolean): string {
     if (output === undefined) {
         return fixable ? "Output: unchanged\n\n" : ""
     }
 
-    const linesFormatted = splitLines(output).map((l) => "  " + l)
+    const linesFormatted = formatOutputCode(output)
     return `Output:\n${linesFormatted.join("\n")}\n\n`
 }
 
-function formatMessages({ code }: TestCase, messages: readonly Linter.LintMessage[]): string {
+function indentLines(lines: readonly string[], indent: number): string[] {
+    const i = " ".repeat(indent)
+    return lines.map((line) => (line === "" ? "" : i + line))
+}
+function formatSuggestions({ code }: TestCase, suggestions: Linter.LintSuggestion[]): string[] {
+    const result: string[] = ["Suggestions:"]
+
+    const firstPrefix = "  - "
+    const prefix = "    "
+
+    for (const { desc, fix } of suggestions) {
+        // message
+        const messageLines = splitLines(desc)
+        result.push(firstPrefix + messageLines[0])
+        for (const line of messageLines.slice(1)) {
+            result.push(prefix + line)
+        }
+
+        // output
+        result.push(prefix + "Output:")
+        const output = code.slice(0, fix.range[0]) + fix.text + code.slice(fix.range[1])
+        result.push(...indentLines(formatOutputCode(output), prefix.length))
+    }
+
+    return result
+}
+function formatMessages(test: TestCase, messages: readonly Linter.LintMessage[]): string {
     if (messages.length === 0) {
         return "No errors\n"
     }
 
     return (
         messages
-            .map(({ message, suggestions }) => {
-                return {
-                    message,
-                    suggestions: suggestions?.map(({ desc, fix }) => {
-                        const output =
-                            code.slice(0, fix.range[0]) + fix.text + code.slice(fix.range[1])
-                        return { desc, output: output + "\n" }
-                    }),
-                }
-            })
-            .map((obj, i) => {
-                let content = obj.message
-                if (obj.suggestions) {
-                    content +=
-                        "\n" +
-                        YAML.stringify({ suggestions: obj.suggestions }, yamlOptions).replace(
-                            /\n$/,
-                            "",
-                        )
-                }
+            .flatMap(({ message, suggestions }, i) => {
                 const prefix = `[${i + 1}] `
                 const space = " ".repeat(prefix.length)
-                return (
-                    prefix +
-                    splitLines(content)
-                        .map((l, j) => (j === 0 ? l : space + l))
-                        .join("\n")
-                )
+
+                const lines = splitLines(message).map((l, j) => (j === 0 ? prefix + l : space + l))
+                if (suggestions) {
+                    lines.push(...indentLines(formatSuggestions(test, suggestions), space.length))
+                }
+                return lines
             })
             .join("\n") + "\n"
     )
