@@ -58,7 +58,12 @@ const rule: Rule.RuleModule = {
 
 // Example
 
-const tester = new SnapshotRuleTester()
+const tester = new SnapshotRuleTester({
+    languageOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+    },
+})
 
 tester.run("no-strings", rule, {
     valid: [String.raw`1 + 2 + 3`],
