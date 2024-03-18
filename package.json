@@ -18,6 +18,14 @@
   },
   "author": "Michael Schmidt",
   "license": "MIT",
+  "bugs": {
+      "url": "https://github.com/RunDevelopment/eslint-snapshot-rule-tester/issues"
+  },
+  "homepage": "https://github.com/RunDevelopment/eslint-snapshot-rule-tester#readme",
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/RunDevelopment/eslint-snapshot-rule-tester.git"
+  },
   "devDependencies": {
     "@types/eslint": "^8.56.5",
     "@types/jest": "^29.5.12",
