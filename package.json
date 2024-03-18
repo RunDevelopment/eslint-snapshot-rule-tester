@@ -66,5 +66,8 @@
     "mocha": {
       "optional": true
     }
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
