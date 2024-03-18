@@ -67,3 +67,17 @@ To update snapshots, run the tests with the `--update` or `-u` flag:
 mocha tests/**/*.js --update
 jest -u
 ```
+
+## Why a custom snapshot format?
+
+I believe that the number one priority for linters should be the IDE experience (since most developers primarily interact with linters through IDEs), so my goal was to make snapshots mimic what a developer would see in their IDE. This means that error locations are displayed inline in code, and error messages are displayed fully formatted.
+
+This goal posed two problems due to the way ESLint rules are usually tested:
+
+1. The primary input of a test case (the code to lint) is also the title of the test case. Since most snapshot formats use the title as a key, the code to lint will be repeated in the snapshot file. This is not only redundant, but also makes diffs larger than necessary.
+2. Rules need to test a lot of syntactic and semantic edge cases, which can lead to code that needs a lot of escape sequences in most file formats. Escape sequences are not just noise, but also pose a problem because they have to be accounted for when printing error locations.
+
+To solve these problems, I created a custom snapshot format that:
+
+1. Is aware of that the snapshot value is an ESLint error report, and will get the title from the test code included in the error report.
+2. Uses a minimal line-based syntax, so no printable character needs escaping. Only certain control characters (and some other edges cases) are escaped.
