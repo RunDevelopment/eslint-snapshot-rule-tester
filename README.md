@@ -11,7 +11,7 @@ npm install --save-dev eslint-snapshot-rule-tester
 > **Requirements**
 > - ESLint v8.4.0 or above
 > - Node.js v18.x or above
-> - Mocha v6.0.0 or above OR Jest v24.9.0 or above
+> - Mocha v6.0.0 or above OR Jest v28.0.0 or above
 
 ## Usage
 
