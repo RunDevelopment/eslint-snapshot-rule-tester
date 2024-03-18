@@ -56,3 +56,20 @@ jobs:
               run: npm run build
             - name: Test
               run: npm run test:mocha
+
+    test-jest:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                jest: ['22.0', '24.0', '25.0', '28.0', '29.0']
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+            - name: Install Packages
+              run: npm ci
+            - run: npm i jest@${{ matrix.jest }}
+            - run: npx jest --version
+            - name: Build
+              run: npm run build
+            - name: Test
+              run: npm run test:jest
