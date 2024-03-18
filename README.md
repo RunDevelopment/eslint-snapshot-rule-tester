@@ -11,7 +11,7 @@ npm install --save-dev eslint-snapshot-rule-tester
 > **Requirements**
 > - ESLint v8.4.0 or above
 > - Node.js v18.x or above
-> - Mocha v6.0.0 or above
+> - Mocha v6.0.0 or above OR Jest v24.9.0 or above
 
 ## Usage
 
@@ -57,12 +57,13 @@ Output:
 ---
 ```
 
-For the full example, see the [test file here](https://github.com/RunDevelopment/eslint-snapshot-rule-tester/blob/main/tests/mocha/no-strings.ts) and [snapshot file here](https://github.com/RunDevelopment/eslint-snapshot-rule-tester/blob/main/tests/mocha/__snapshots__/no-strings.ts.snap).
+For the full example, see the [test file here](https://github.com/RunDevelopment/eslint-snapshot-rule-tester/blob/main/tests/mocha/no-strings.ts) and [snapshot file here](https://github.com/RunDevelopment/eslint-snapshot-rule-tester/blob/main/tests/mocha/__snapshots__/no-strings.ts.eslintsnap).
 
 ### Updating snapshots
 
-To update snapshots, run the tests with the `--update` flag:
+To update snapshots, run the tests with the `--update` or `-u` flag:
 
 ```sh
 mocha tests/**/*.js --update
+jest -u
 ```
