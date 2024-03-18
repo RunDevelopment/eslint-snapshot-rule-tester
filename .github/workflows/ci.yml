@@ -61,7 +61,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                jest: ['24.0', '25.0', '28.0', '29.0']
+                jest: ['26.0', '27.0', '28.0', '29.0']
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4
