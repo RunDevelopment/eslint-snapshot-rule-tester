@@ -67,7 +67,7 @@ export function freezeDeeply(x: unknown): void {
  * @returns JSON Schema for the rule's options.
  */
 export function getRuleOptionsSchema(rule: Rule.RuleModule): JSONSchema4 | null {
-    const schema = rule.schema || (rule.meta && rule.meta.schema)
+    const schema = rule.schema || rule.meta?.schema
 
     if (Array.isArray(schema)) {
         if (schema.length) {
