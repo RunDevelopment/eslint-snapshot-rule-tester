@@ -199,33 +199,6 @@ export class SnapshotRuleTester {
                 throw new Error(`\`schema: {}\` is a no-op${metaSchemaDescription}`)
             }
 
-            /*
-             * Setup AST getters.
-             * The goal is to check whether or not AST was modified when
-             * running the rule under test.
-             */
-            let beforeAST, afterAST
-            configs.push({
-                plugins: {
-                    "rule-tester": {
-                        rules: {
-                            "validate-ast": {
-                                create() {
-                                    return {
-                                        Program(node) {
-                                            beforeAST = cloneDeeplyExcludesParent(node)
-                                        },
-                                        "Program:exit"(node) {
-                                            afterAST = node
-                                        },
-                                    }
-                                },
-                            },
-                        },
-                    },
-                },
-            })
-
             if (schema) {
                 ajv.validateSchema(schema)
 
@@ -256,6 +229,33 @@ export class SnapshotRuleTester {
                     )
                 }
             }
+
+            /*
+             * Setup AST getters.
+             * The goal is to check whether or not AST was modified when
+             * running the rule under test.
+             */
+            let beforeAST, afterAST
+            configs.push({
+                plugins: {
+                    "rule-tester": {
+                        rules: {
+                            "validate-ast": {
+                                create() {
+                                    return {
+                                        Program(node) {
+                                            beforeAST = cloneDeeplyExcludesParent(node)
+                                        },
+                                        "Program:exit"(node) {
+                                            afterAST = node
+                                        },
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            })
 
             // Verify the code.
             const messages = linter.verify(code, configs, filename)
