@@ -67,7 +67,7 @@ jobs:
             - uses: actions/setup-node@v4
             - name: Install Packages
               run: npm ci
-            - run: npm i jest@${{ matrix.jest }} ts-jest@${{ matrix.jest }}
+            - run: npm i jest@${{ matrix.jest }}
             - run: npx jest --version
             - name: Build
               run: npm run build
