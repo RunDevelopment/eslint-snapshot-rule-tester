@@ -35,38 +35,8 @@ function register(suite: Mocha.Suite): void {
     })
 }
 
-export class MochaSnapshotTester implements SnapshotTester {
-    private readonly test: Mocha.Runnable
-
-    constructor(test: Mocha.Runnable) {
-        this.test = test
-    }
-
-    public static parseContext(context: unknown): MochaSnapshotTester | undefined {
-        try {
-            if (
-                isObject(context) &&
-                "runnable" in context &&
-                typeof context.runnable === "function"
-            ) {
-                const test: unknown = context.runnable()
-                if (
-                    isObject(test) &&
-                    "file" in test &&
-                    typeof test.file === "string" &&
-                    "title" in test &&
-                    typeof test.title === "string" &&
-                    "parent" in test &&
-                    isObject(test.parent)
-                ) {
-                    return new MochaSnapshotTester(test as Mocha.Runnable)
-                }
-            }
-        } catch {
-            // fall through
-        }
-        return undefined
-    }
+class MochaSnapshotTester implements SnapshotTester {
+    constructor(private readonly test: Mocha.Runnable) {}
 
     assertEqual(actual: string): void {
         register(getRoot(this.test))
@@ -76,4 +46,22 @@ export class MochaSnapshotTester implements SnapshotTester {
 
         assertEqualSnapshot(file, title, actual)
     }
+}
+
+export function createMochaTester(context: unknown): SnapshotTester | undefined {
+    if (isObject(context) && "runnable" in context && typeof context.runnable === "function") {
+        const test: unknown = context.runnable()
+        if (
+            isObject(test) &&
+            "file" in test &&
+            typeof test.file === "string" &&
+            "title" in test &&
+            typeof test.title === "string" &&
+            "parent" in test &&
+            isObject(test.parent)
+        ) {
+            return new MochaSnapshotTester(test as Mocha.Runnable)
+        }
+    }
+    return undefined
 }

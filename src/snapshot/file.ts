@@ -4,7 +4,7 @@ import { includesInvalidSurrogatePair, splitLines } from "../util"
 import { ReadonlySnapshotData, SnapshotData } from "./data"
 
 export function getSnapshotFilePath(testFile: string): string {
-    return join(dirname(testFile), "__snapshots__", basename(testFile) + ".snap")
+    return join(dirname(testFile), "__snapshots__", basename(testFile) + ".eslintsnap")
 }
 
 interface KeyLine {

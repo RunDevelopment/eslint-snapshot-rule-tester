@@ -12,7 +12,8 @@ import stringify from "json-stable-stringify-without-jsonify"
 import createAjv from "./ajv"
 import { defaultConfig } from "./config"
 import { format } from "./format"
-import { MochaSnapshotTester } from "./snapshot/mocha"
+import { createJestTester } from "./snapshot/jest"
+import { createMochaTester } from "./snapshot/mocha"
 import { SnapshotTester } from "./snapshot/tester"
 import { TestCase, TestCases, ruleTesterParameters, toTestCase } from "./test-case"
 import { cloneDeeplyExcludesParent, freezeDeeply, getRuleOptionsSchema, sanitize } from "./util"
@@ -414,7 +415,14 @@ export class SnapshotRuleTester {
                         knownTitles.add(title)
 
                         testEnv[invalid.only ? "itOnly" : "it"](title, function (this: unknown) {
-                            testInvalidTemplate(invalid, MochaSnapshotTester.parseContext(this)!)
+                            testInvalidTemplate(
+                                invalid,
+                                createMochaTester(this) ||
+                                    createJestTester({
+                                        useJestSnapshots: false,
+                                        titleParts: [ruleName, "invalid", title],
+                                    })!,
+                            )
                         })
                     })
                 })
