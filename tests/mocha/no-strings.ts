@@ -11,18 +11,18 @@ const rule: Rule.RuleModule = {
             template: "Template strings are not allowed.",
             somethingElse: "Use something else instead.",
         },
-    },
-    schema: [
-        {
-            type: "object",
-            properties: {
-                somethingElse: {
-                    type: "string",
+        schema: [
+            {
+                type: "object",
+                properties: {
+                    somethingElse: {
+                        type: "string",
+                    },
                 },
+                additionalProperties: false,
             },
-            additionalProperties: false,
-        },
-    ],
+        ],
+    },
     create(context) {
         const somethingElse = context.options[0]?.somethingElse ?? "somethingElse"
 
