@@ -1,0 +1,87 @@
+# eslint-snapshot-rule-tester format: v1
+
+
+Test: no-strings >> invalid
+Code:
+  1 | const a = ["foo", "bar"]
+    |            ^~~~~  ^~~~~
+    |            [1]    [2]
+  2 | const b = a.join("\n")
+    |                  ^~~~ [3]
+
+Output:
+  1 | const a = [42, 42]
+  2 | const b = a.join(42)
+
+[1] Strings are not allowed. Use a number instead.
+[2] Strings are not allowed. Use a number instead.
+[3] Strings are not allowed. Use a number instead.
+---
+
+
+Test: no-strings >> invalid
+Code:
+  1 | class Foo {
+  2 |     foo = "foo"
+    |           ^~~~~ [1]
+  3 |     constructor() {
+  4 |         this.bar = "bar"
+    |                    ^~~~~ [2]
+  5 |     }
+  6 | }
+
+Output:
+  1 | class Foo {
+  2 |     foo = 42
+  3 |     constructor() {
+  4 |         this.bar = 42
+  5 |     }
+  6 | }
+
+[1] Strings are not allowed. Use a number instead.
+[2] Strings are not allowed. Use a number instead.
+---
+
+
+Test: no-strings >> invalid
+Code:
+  1 | ["foo", "bar"].join("\n")
+    |  ^~~~~  ^~~~~       ^~~~
+    |  [1]    [2]         [3]
+
+Output:
+  1 | [42, 42].join(42)
+
+[1] Strings are not allowed. Use a number instead.
+[2] Strings are not allowed. Use a number instead.
+[3] Strings are not allowed. Use a number instead.
+---
+
+
+Test: no-strings >> invalid
+Options:
+  - somethingElse: REPLACEMENT
+
+Code:
+  1 | `foo ${a ? "bar" : "baz"} ${`_${""}_`}`
+    | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ [1]
+    |            ^~~~~ [2]        ^~~~~~~~~ [4]
+    |                    ^~~~~ [3]    ^~ [5]
+
+Output:
+  1 | `foo ${a ? 42 : 42} ${`_${42}_`}`
+
+[1] Template strings are not allowed.
+    Suggestions:
+      - Use something else instead.
+        Output:
+          1 | REPLACEMENT
+[2] Strings are not allowed. Use a number instead.
+[3] Strings are not allowed. Use a number instead.
+[4] Template strings are not allowed.
+    Suggestions:
+      - Use something else instead.
+        Output:
+          1 | `foo ${a ? "bar" : "baz"} ${REPLACEMENT}`
+[5] Strings are not allowed. Use a number instead.
+---
